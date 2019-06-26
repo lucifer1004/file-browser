@@ -1,11 +1,11 @@
 import React from 'react'
+import Typography from '@material-ui/core/Typography'
 import Folder from './components/Folder'
-import './App.css'
 
 export default () => {
   return (
     <>
-      <h1>Files</h1>
+      <Typography gutterBottom>File Viewer</Typography>
       <Folder />
     </>
   )

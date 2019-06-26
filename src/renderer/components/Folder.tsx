@@ -3,55 +3,100 @@
 //
 import React, {useState, useEffect} from 'react'
 import {makeStyles} from '@material-ui/core/styles'
-import GridList from '@material-ui/core/GridList'
+import Breadcrumbs from '@material-ui/core/Breadcrumbs'
 import GridListTile from '@material-ui/core/GridListTile'
+import Link from '@material-ui/core/Link'
+import {Typography} from '@material-ui/core'
 import FileItem from './FileItem'
 //
 // ─── NODE IMPORTS ───────────────────────────────────────────────────────────────
 //
 import fs from 'fs'
+import path from 'path'
 import {remote} from 'electron'
+//
+// ─── INTERFACES ─────────────────────────────────────────────────────────────────
+//
+interface Path {
+  path: string
+  isDirectory: boolean
+}
 
 const {app, dialog} = remote
 
 const useStyles = makeStyles(theme => ({
   root: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
     overflow: 'hidden',
     backgroundColor: theme.palette.background.paper,
   },
   gridList: {
-    width: '100%',
-    height: '100%',
+    display: 'flex',
+    padding: 0,
+    flexWrap: 'wrap',
+    listStyle: 'none',
+    overflowY: 'auto',
+    justifyContent: 'flex-start',
   },
 }))
 
-export default () => {
+const Folder = () => {
   const classes = useStyles()
-  const [directory, setDirectory] = useState('/')
-  const [files, setFiles] = useState<string[]>([])
-  const changeDir = (dir: string) =>
-    setDirectory(directory => {
-      const newDir = directory + dir
-      if (fs.lstatSync(newDir).isDirectory()) return newDir + '/'
-      else return directory
-    })
+  const [directory, setDirectory] = useState('')
+  const [files, setFiles] = useState<Path[]>([])
+
+  const isDirectory = (dir: string) => {
+    const newDir = `${directory}/${dir}`
+    if (!fs.existsSync(newDir)) return false
+    else return fs.lstatSync(newDir).isDirectory()
+  }
 
   useEffect(() => {
-    setFiles(fs.readdirSync(directory))
+    setFiles(
+      fs
+        .readdirSync(path.join('/', directory))
+        .filter(path => !/(^|\/)\.[^\/\.]/g.test(path))
+        .map(file => ({
+          path: path.join('/', directory, file),
+          isDirectory: isDirectory(file),
+        })),
+    )
   }, [directory])
 
   return (
     <div className={classes.root}>
-      <GridList cellHeight={160} className={classes.gridList} cols={5}>
+      <Breadcrumbs separator="›" aria-label="Breadcrumb">
+        {directory.split('/').map((dir, index) => (
+          <Link
+            color="inherit"
+            key={index}
+            onClick={() =>
+              setDirectory(
+                directory
+                  .split('/')
+                  .slice(0, index + 1)
+                  .join('/'),
+              )
+            }
+          >
+            {dir === '' ? '/' : dir}
+          </Link>
+        ))}
+      </Breadcrumbs>
+      <ul className={classes.gridList}>
         {files.map((file, index) => (
           <GridListTile key={index}>
-            <FileItem file={file} setDirectory={changeDir} />
+            <FileItem
+              filePath={file.path}
+              isDirectory={file.isDirectory}
+              setDirectory={setDirectory}
+            />
           </GridListTile>
         ))}
-      </GridList>
+      </ul>
     </div>
   )
 }
+
+Folder.displayName = 'Folder'
+
+export default Folder

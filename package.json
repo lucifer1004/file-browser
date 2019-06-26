@@ -1,8 +1,8 @@
 {
-  "name": "gritty-map",
-  "productName": "gritty-map",
+  "name": "file-browser",
+  "productName": "file-browser",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "My Electron File Browser",
   "main": ".webpack/main",
   "scripts": {
     "start": "cross-env NODE_ENV=dev electron-forge start",
@@ -18,8 +18,7 @@
   "config": {
     "forge": {
       "packagerConfig": {},
-      "makers": [
-        {
+      "makers": [{
           "name": "@electron-forge/maker-squirrel",
           "config": {
             "name": "gritty_map"
@@ -47,13 +46,11 @@
             "mainConfig": "./webpack.main.config.js",
             "renderer": {
               "config": "./webpack.renderer.config.js",
-              "entryPoints": [
-                {
-                  "html": "./src/renderer/index.html",
-                  "js": "./src/renderer/index.tsx",
-                  "name": "main_window"
-                }
-              ]
+              "entryPoints": [{
+                "html": "./src/renderer/index.html",
+                "js": "./src/renderer/index.tsx",
+                "name": "main_window"
+              }]
             }
           }
         ]
