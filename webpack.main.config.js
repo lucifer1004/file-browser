@@ -1,14 +1,6 @@
-module.exports = {
-  /**
-   * This is the main entry point for your application, it's the first file
-   * that runs in the main process.
-   */
+const merge = require('webpack-merge')
+const common = require('./webpack.common.config')
+
+module.exports = merge({
   entry: './src/main/index.ts',
-  // Put your normal webpack config below here
-  module: {
-    rules: require('./webpack.rules'),
-  },
-  resolve: {
-    extensions: ['.js', '.json', '.jsx', '.ts', '.tsx'],
-  },
-}
+}, common)

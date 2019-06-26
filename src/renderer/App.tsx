@@ -1,12 +1,12 @@
 import React from 'react'
-import Text from './components/Text'
+import Folder from './components/Folder'
 import './App.css'
 
 export default () => {
   return (
     <>
-      <h1>Hello Worlds</h1>
-      <Text />
+      <h1>Files</h1>
+      <Folder />
     </>
   )
 }

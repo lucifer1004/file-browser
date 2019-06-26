@@ -1,12 +1,4 @@
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const merge = require('webpack-merge')
+const common = require('./webpack.common.config')
 
-module.exports = {
-  // Put your normal webpack config below here
-  plugins: [new MiniCssExtractPlugin()],
-  module: {
-    rules: require('./webpack.rules'),
-  },
-  resolve: {
-    extensions: ['.js', '.json', '.jsx', '.ts', '.tsx'],
-  },
-}
+module.exports = merge({}, common)
