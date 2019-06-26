@@ -1,4 +1,4 @@
-import {app, BrowserWindow} from 'electron'
+import {app, BrowserWindow, ipcMain} from 'electron'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -15,7 +15,7 @@ const createWindow = () => {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
-    webPreferences: {nodeIntegration: false, contextIsolation: true},
+    webPreferences: {nodeIntegration: true, contextIsolation: false},
   })
 
   // and load the index.html of the app.
@@ -58,3 +58,7 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+
+ipcMain.on('online-status-changed', (event: any, status: any) => {
+  console.log(status)
+})
