@@ -5,7 +5,7 @@ import Folder from './components/Folder'
 export default () => {
   return (
     <>
-      <Typography gutterBottom>File Viewer</Typography>
+      <Typography>File Browser</Typography>
       <Folder />
     </>
   )
