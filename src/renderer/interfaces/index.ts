@@ -1,3 +1,4 @@
+import {Dispatch, SetStateAction} from 'react'
 import {MenuItemProps} from '@material-ui/core/MenuItem'
 import {TextFieldProps} from '@material-ui/core/TextField'
 
@@ -17,4 +18,9 @@ export interface RenderSuggestionProps {
   itemProps: MenuItemProps<'div', {button?: never}>
   selectedItem: string
   file: Path
+}
+
+export interface SearchBoxProps {
+  files: Path[]
+  setFilter: Dispatch<SetStateAction<string>>
 }

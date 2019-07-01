@@ -7,7 +7,11 @@ import MenuItem from '@material-ui/core/MenuItem'
 import Paper from '@material-ui/core/Paper'
 import TextField from '@material-ui/core/TextField'
 import Downshift from 'downshift'
-import {Path, RenderInputProps, RenderSuggestionProps} from '../interfaces'
+import {
+  RenderInputProps,
+  RenderSuggestionProps,
+  SearchBoxProps,
+} from '../interfaces'
 //
 // ─── NODE IMPORTS ───────────────────────────────────────────────────────────────
 //
@@ -54,55 +58,56 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const renderInput = (inputProps: RenderInputProps) => {
-  const {InputProps, classes, ref, ...other} = inputProps
-
-  return (
-    <TextField
-      InputProps={{
-        inputRef: ref,
-        classes: {
-          root: classes.inputRoot,
-          input: classes.inputInput,
-        },
-        ...InputProps,
-      }}
-      {...other}
-    />
-  )
-}
-
-const renderSuggestion = (suggestionProps: RenderSuggestionProps) => {
-  const {
-    file,
-    index,
-    itemProps,
-    highlightedIndex,
-    selectedItem,
-  } = suggestionProps
-  const isHighlighted = highlightedIndex === index
-  const isSelected = (selectedItem || '').indexOf(file.path) > -1
-
-  return (
-    <MenuItem
-      {...itemProps}
-      key={file.path}
-      selected={isHighlighted}
-      component="div"
-      style={{
-        fontWeight: isSelected ? 500 : 400,
-      }}
-    >
-      {path.basename(file.path)}
-    </MenuItem>
-  )
-}
-
-const SearchBox = ({files}: {files: Path[]}) => {
+const SearchBox = ({files, setFilter}: SearchBoxProps) => {
   const classes = useStyles()
+
+  const renderInput = (inputProps: RenderInputProps) => {
+    const {InputProps, classes, ref, ...other} = inputProps
+
+    return (
+      <TextField
+        InputProps={{
+          inputRef: ref,
+          classes: {
+            root: classes.inputRoot,
+            input: classes.inputInput,
+          },
+          ...InputProps,
+        }}
+        {...other}
+      />
+    )
+  }
+
+  const renderSuggestion = (suggestionProps: RenderSuggestionProps) => {
+    const {
+      file,
+      index,
+      itemProps,
+      highlightedIndex,
+      selectedItem,
+    } = suggestionProps
+    const isHighlighted = highlightedIndex === index
+    const isSelected = (selectedItem || '').indexOf(file.path) > -1
+
+    return (
+      <MenuItem
+        {...itemProps}
+        key={file.path}
+        selected={isHighlighted}
+        component="div"
+        style={{
+          fontWeight: isSelected ? 500 : 400,
+        }}
+      >
+        {path.basename(file.path)}
+      </MenuItem>
+    )
+  }
 
   const getSuggestions = (value: string, {showEmpty = false} = {}) => {
     const inputValue = value.trim().toLowerCase()
+    setFilter(inputValue)
     const inputLength = inputValue.length
     let count = 0
 
@@ -113,8 +118,8 @@ const SearchBox = ({files}: {files: Path[]}) => {
             count < 5 &&
             path
               .basename(file.path)
-              .slice(0, inputLength)
-              .toLowerCase() === inputValue
+              .toLowerCase()
+              .includes(inputValue)
 
           if (keep) {
             count += 1
@@ -123,8 +128,14 @@ const SearchBox = ({files}: {files: Path[]}) => {
           return keep
         })
   }
+
   return (
-    <Downshift id="downshift-simple">
+    <Downshift
+      id="downshift-simple"
+      onChange={(selectedItem: string) => {
+        setFilter(selectedItem.toLowerCase())
+      }}
+    >
       {({
         getInputProps,
         getItemProps,

@@ -4,9 +4,12 @@
 import React, {useState, useEffect} from 'react'
 import {makeStyles} from '@material-ui/core/styles'
 import Breadcrumbs from '@material-ui/core/Breadcrumbs'
+import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import GridListTile from '@material-ui/core/GridListTile'
 import Link from '@material-ui/core/Link'
+import CancelOutlined from '@material-ui/icons/CancelOutlined'
+import SearchOutlined from '@material-ui/icons/SearchOutlined'
 import {Path} from '../interfaces'
 import FileItem from './FileItem'
 import SearchBox from './SearchBox'
@@ -15,6 +18,7 @@ import SearchBox from './SearchBox'
 //
 import fs from 'fs'
 import path from 'path'
+import {Typography} from '@material-ui/core'
 //
 // ─── STYLES ─────────────────────────────────────────────────────────────────────
 //
@@ -62,6 +66,7 @@ const useStyles = makeStyles(theme => ({
 const Folder = () => {
   const classes = useStyles()
   const [directory, setDirectory] = useState('')
+  const [filter, setFilter] = useState('')
   const [files, setFiles] = useState<Path[]>([])
 
   const isDirectory = (dir: string) => {
@@ -85,7 +90,7 @@ const Folder = () => {
   return (
     <div className={classes.root}>
       <Grid container direction="row">
-        <Grid item container xs={10} alignItems="center">
+        <Grid item container xs={8} alignItems="center">
           <Breadcrumbs separator="›" aria-label="Breadcrumb">
             {directory.split('/').map((dir, index) => (
               <Link
@@ -105,20 +110,32 @@ const Folder = () => {
             ))}
           </Breadcrumbs>
         </Grid>
-        <Grid item xs={2}>
-          <SearchBox files={files} />
+        <Grid item xs={3}>
+          <SearchBox files={files} setFilter={setFilter} />
+        </Grid>
+        <Grid item xs={1}>
+          <SearchOutlined color="primary" />
         </Grid>
       </Grid>
       <ul className={classes.gridList}>
-        {files.map((file, index) => (
-          <GridListTile key={index}>
-            <FileItem
-              filePath={file.path}
-              isDirectory={file.isDirectory}
-              setDirectory={setDirectory}
-            />
-          </GridListTile>
-        ))}
+        {files
+          .filter(file => {
+            const keep = path
+              .basename(file.path)
+              .toLowerCase()
+              .includes(filter)
+
+            return keep
+          })
+          .map((file, index) => (
+            <GridListTile key={index}>
+              <FileItem
+                filePath={file.path}
+                isDirectory={file.isDirectory}
+                setDirectory={setDirectory}
+              />
+            </GridListTile>
+          ))}
       </ul>
     </div>
   )
