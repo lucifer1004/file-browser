@@ -96,14 +96,15 @@ const Folder = () => {
               <Link
                 color="inherit"
                 key={index}
-                onClick={() =>
+                onClick={() => {
                   setDirectory(
                     directory
                       .split('/')
                       .slice(0, index + 1)
                       .join('/'),
                   )
-                }
+                  setFilter('')
+                }}
               >
                 {dir === '' ? '/' : dir}
               </Link>
@@ -133,6 +134,7 @@ const Folder = () => {
                 filePath={file.path}
                 isDirectory={file.isDirectory}
                 setDirectory={setDirectory}
+                setFilter={setFilter}
               />
             </GridListTile>
           ))}

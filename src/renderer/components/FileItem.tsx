@@ -19,6 +19,7 @@ interface FileItemProps {
   filePath: string
   isDirectory: boolean
   setDirectory: Function
+  setFilter: Function
 }
 //
 // ─── STYLE ──────────────────────────────────────────────────────────────────────
@@ -51,12 +52,15 @@ const useStyles = makeStyles(theme => ({
 //
 // ─── COMPONENT ──────────────────────────────────────────────────────────────────
 //
-const FileItem = ({filePath, isDirectory, setDirectory}: FileItemProps) => {
+const FileItem = ({filePath, isDirectory, setDirectory, setFilter}: FileItemProps) => {
   const classes = useStyles()
   const [baseName, setBaseName] = useState('')
   const [extName, setExtName] = useState('')
   const handleDoubleClick = () => {
-    if (isDirectory) setDirectory(filePath)
+    if (isDirectory) {
+      setDirectory(filePath)
+      setFilter('')
+    }
   }
   useEffect(() => {
     setBaseName(path.basename(filePath))
