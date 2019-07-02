@@ -23,11 +23,6 @@ export interface FBReducer {
   dispatch: Dispatch<FBAction>
 }
 
-export interface Path {
-  path: string
-  isDirectory: boolean
-}
-
 export type RenderInputProps = TextFieldProps & {
   ref?: React.Ref<HTMLDivElement>
   classes?: any
@@ -38,10 +33,9 @@ export interface RenderSuggestionProps {
   index: number
   itemProps: MenuItemProps<'div', {button?: never}>
   selectedItem: string
-  file: Path
+  file: Content
 }
 
 export interface SearchBoxProps {
-  files: Path[]
   setFilter: Dispatch<SetStateAction<string>>
 }

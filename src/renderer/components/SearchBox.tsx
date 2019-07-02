@@ -1,12 +1,13 @@
 //
 // ─── UI IMPORTS ─────────────────────────────────────────────────────────────────
 //
-import React from 'react'
+import React, {useContext} from 'react'
 import {makeStyles} from '@material-ui/core/styles'
 import MenuItem from '@material-ui/core/MenuItem'
 import Paper from '@material-ui/core/Paper'
 import TextField from '@material-ui/core/TextField'
 import Downshift from 'downshift'
+import {FBContext} from '../contexts'
 import {
   RenderInputProps,
   RenderSuggestionProps,
@@ -58,8 +59,9 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const SearchBox = ({files, setFilter}: SearchBoxProps) => {
+const SearchBox = ({setFilter}: SearchBoxProps) => {
   const classes = useStyles()
+  const {state, dispatch} = useContext(FBContext)
 
   const renderInput = (inputProps: RenderInputProps) => {
     const {InputProps, classes, ref, ...other} = inputProps
@@ -113,7 +115,7 @@ const SearchBox = ({files, setFilter}: SearchBoxProps) => {
 
     return inputLength === 0 && !showEmpty
       ? []
-      : files.filter(file => {
+      : state.contents.filter(file => {
           const keep =
             count < 5 &&
             path

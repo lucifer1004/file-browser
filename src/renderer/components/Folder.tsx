@@ -108,7 +108,7 @@ const Folder = () => {
           </Breadcrumbs>
         </Grid>
         <Grid item xs={3}>
-          <SearchBox files={state.contents} setFilter={setFilter} />
+          <SearchBox setFilter={setFilter} />
         </Grid>
         <Grid item xs={1}>
           <SearchOutlined color="primary" />

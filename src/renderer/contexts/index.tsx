@@ -1,6 +1,6 @@
 import React, {useReducer} from 'react'
 import {remote} from 'electron'
-import fs from 'fs'
+import fs from 'fs-extra'
 import path from 'path'
 import {FBAction, FBReducer, FBState, Content} from '../interfaces'
 
