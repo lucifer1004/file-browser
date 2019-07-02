@@ -1,12 +1,14 @@
 import React from 'react'
-import Typography from '@material-ui/core/Typography'
+import {FBProvider} from './contexts'
 import Folder from './components/Folder'
+import Layout from './layouts'
 
 export default () => {
   return (
-    <>
-      <Typography>File Browser</Typography>
-      <Folder />
-    </>
+    <FBProvider>
+      <Layout>
+        <Folder />
+      </Layout>
+    </FBProvider>
   )
 }

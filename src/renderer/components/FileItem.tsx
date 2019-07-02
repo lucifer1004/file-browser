@@ -1,13 +1,15 @@
 //
 // ─── UI IMPORTS ─────────────────────────────────────────────────────────────────
 //
-import React, {useEffect, useState} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import {makeStyles} from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import Tooltip from '@material-ui/core/Tooltip'
 import Typography from '@material-ui/core/Typography'
 import InsertDriveFileOutlined from '@material-ui/icons/InsertDriveFileOutlined'
 import FolderOutlined from '@material-ui/icons/FolderOutlined'
+import {FBContext} from '../contexts'
+import {Content} from '../interfaces'
 //
 // ─── NODE IMPORTS ───────────────────────────────────────────────────────────────
 //
@@ -16,9 +18,7 @@ import path from 'path'
 // ─── INTERFACES ─────────────────────────────────────────────────────────────────
 //
 interface FileItemProps {
-  filePath: string
-  isDirectory: boolean
-  setDirectory: Function
+  file: Content
   setFilter: Function
 }
 //
@@ -52,29 +52,33 @@ const useStyles = makeStyles(theme => ({
 //
 // ─── COMPONENT ──────────────────────────────────────────────────────────────────
 //
-const FileItem = ({filePath, isDirectory, setDirectory, setFilter}: FileItemProps) => {
+const FileItem = ({file, setFilter}: FileItemProps) => {
   const classes = useStyles()
   const [baseName, setBaseName] = useState('')
   const [extName, setExtName] = useState('')
+  const {dispatch} = useContext(FBContext)
   const handleDoubleClick = () => {
-    if (isDirectory) {
-      setDirectory(filePath)
+    if (file.isDirectory) {
+      dispatch({
+        type: 'enter',
+        directory: file.path,
+      })
       setFilter('')
     }
   }
   useEffect(() => {
-    setBaseName(path.basename(filePath))
-    setExtName(path.extname(filePath))
-  }, [filePath])
+    setBaseName(path.basename(file.path))
+    setExtName(path.extname(file.path))
+  }, [file])
 
   return (
     <Tooltip title={baseName}>
       <Button className={classes.button} onDoubleClick={handleDoubleClick}>
         <div className={classes.card}>
-          {isDirectory ? (
+          {file.isDirectory ? (
             <FolderOutlined className={classes.icon} color="primary" />
           ) : extName === '.jpg' || extName === '.png' ? (
-            <img className={classes.icon} src={`file://${filePath}`}></img>
+            <img className={classes.icon} src={`file://${file.path}`}></img>
           ) : (
             <InsertDriveFileOutlined
               className={classes.icon}

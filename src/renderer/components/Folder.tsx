@@ -1,24 +1,20 @@
 //
 // ─── UI IMPORTS ─────────────────────────────────────────────────────────────────
 //
-import React, {useState, useEffect} from 'react'
+import React, {useContext, useState} from 'react'
 import {makeStyles} from '@material-ui/core/styles'
 import Breadcrumbs from '@material-ui/core/Breadcrumbs'
-import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import GridListTile from '@material-ui/core/GridListTile'
 import Link from '@material-ui/core/Link'
-import CancelOutlined from '@material-ui/icons/CancelOutlined'
 import SearchOutlined from '@material-ui/icons/SearchOutlined'
-import {Path} from '../interfaces'
+import {FBContext} from '../contexts'
 import FileItem from './FileItem'
 import SearchBox from './SearchBox'
 //
 // ─── NODE IMPORTS ───────────────────────────────────────────────────────────────
 //
-import fs from 'fs'
 import path from 'path'
-import {Typography} from '@material-ui/core'
 //
 // ─── STYLES ─────────────────────────────────────────────────────────────────────
 //
@@ -65,61 +61,61 @@ const useStyles = makeStyles(theme => ({
 //
 const Folder = () => {
   const classes = useStyles()
-  const [directory, setDirectory] = useState('')
+  const {state, dispatch} = useContext(FBContext)
   const [filter, setFilter] = useState('')
-  const [files, setFiles] = useState<Path[]>([])
 
-  const isDirectory = (dir: string) => {
-    const newDir = `${directory}/${dir}`
-    if (!fs.existsSync(newDir)) return false
-    else return fs.lstatSync(newDir).isDirectory()
-  }
-
-  useEffect(() => {
-    setFiles(
-      fs
-        .readdirSync(path.join('/', directory))
-        .filter(path => !/(^|\/)\.[^\/\.]/g.test(path))
-        .map(file => ({
-          path: path.join('/', directory, file),
-          isDirectory: isDirectory(file),
-        })),
-    )
-  }, [directory])
+  const enterDirectory = (dir: string) =>
+    dispatch({
+      type: 'enter',
+      directory: dir,
+    })
 
   return (
     <div className={classes.root}>
       <Grid container direction="row">
         <Grid item container xs={8} alignItems="center">
           <Breadcrumbs separator="›" aria-label="Breadcrumb">
-            {directory.split('/').map((dir, index) => (
-              <Link
-                color="inherit"
-                key={index}
-                onClick={() => {
-                  setDirectory(
-                    directory
-                      .split('/')
-                      .slice(0, index + 1)
-                      .join('/'),
-                  )
-                  setFilter('')
-                }}
-              >
-                {dir === '' ? '/' : dir}
-              </Link>
-            ))}
+            <Link
+              color="inherit"
+              key="root"
+              onClick={() => {
+                enterDirectory('/')
+                setFilter('')
+              }}
+            >
+              /
+            </Link>
+            {state.directory
+              .substr(1)
+              .split('/')
+              .map((dir, index) => (
+                <Link
+                  color="inherit"
+                  key={index}
+                  onClick={() => {
+                    enterDirectory(
+                      state.directory
+                        .split('/')
+                        .slice(0, index + 2)
+                        .join('/'),
+                    )
+                    setFilter('')
+                  }}
+                >
+                  {dir}
+                </Link>
+              ))}
           </Breadcrumbs>
         </Grid>
         <Grid item xs={3}>
-          <SearchBox files={files} setFilter={setFilter} />
+          <SearchBox files={state.contents} setFilter={setFilter} />
         </Grid>
         <Grid item xs={1}>
           <SearchOutlined color="primary" />
         </Grid>
       </Grid>
       <ul className={classes.gridList}>
-        {files
+        {state.contents
           .filter(file => {
             const keep = path
               .basename(file.path)
@@ -130,12 +126,7 @@ const Folder = () => {
           })
           .map((file, index) => (
             <GridListTile key={index}>
-              <FileItem
-                filePath={file.path}
-                isDirectory={file.isDirectory}
-                setDirectory={setDirectory}
-                setFilter={setFilter}
-              />
+              <FileItem file={file} setFilter={setFilter} />
             </GridListTile>
           ))}
       </ul>
